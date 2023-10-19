@@ -51,7 +51,7 @@ def main():
     upl = None 
 
     #title and header
-    st.title("Classification Dashboard")
+    st.title("Segmentation Dashboard")
     st.text("A dashboard to check how various segmentation models perform with various types of images.")
       
     #widget to upload and display image
@@ -98,12 +98,9 @@ def main():
         prediction = model(input_batch)["out"]
         normalized_masks = prediction.softmax(dim=1)
         class_to_idx = {cls: idx for (idx, cls) in enumerate(weights.meta["categories"])}
-        mask = normalized_masks[0, class_to_idx["car"]]
+        mask = normalized_masks[1, class_to_idx["car"]]
         output = to_pil_image(mask)
         st.image(output)
-
-        #loading ImageNet classes
-        classes = read_classes()
     
     
 if __name__ == '__main__':

@@ -52,19 +52,17 @@ def main():
 
     #title and header
     st.title("Classification Dashboard")
-    st.subheader("A cool dashboard to run inference on pretrained classification models on streamlit.")
+    st.text("A dashboard to check how various segmentation models perform with various types of images.")
       
     #widget to upload and display image
-    st.subheader("Upload image you want to be classified here")
-    upl = st.file_uploader('')
+    upl = st.file_uploader('Upload the image you want to segment.')
 
     # displaying the image 
     if upl is not None:
-        showimg(upl)
+        st.image(upl)
     
     #choosing the model to classify
-    st.subheader("Which classification model do you want to use:")
-    modelname = st.selectbox('',['DeepLabv3 ResNet 101','DeepLabv3 ResNet 50','DeepLabv3 MobileNetv3'])
+    modelname = st.selectbox('Select Segmentation Model',['DeepLabv3 ResNet 101','DeepLabv3 ResNet 50','DeepLabv3 MobileNetv3'])
     
     if st.button("Classify"):
 
@@ -81,6 +79,12 @@ def main():
         #loading the selected model
         if modelname == 'DeepLabv3 ResNet 101':
             weights, model = rn101()
+        
+        elif modelname == 'DeepLabv3 ResNet 50':
+            weights, model = rn50()
+        
+        elif modelname == 'DeepLabv3 ResNet 50':
+            weights, model = mnv3()
 
         input_image = Image.open(upl)
         input_image = input_image.convert("RGB")

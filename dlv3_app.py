@@ -64,7 +64,30 @@ def main():
     #choosing the model to classify
     modelname = st.selectbox('Select Segmentation Model',['DeepLabv3 ResNet 101','DeepLabv3 ResNet 50','DeepLabv3 MobileNetv3'])
     
-    if st.button("Classify"):
+    #choosing the class that you want to be classified
+    class_name = st.selectbox('Select Class that needs to be Classified',['__background__',
+        'aeroplane',
+        'bicycle',
+        'bird',
+        'boat',
+        'bottle',
+        'bus',
+        'car',
+        'cat',
+        'chair',
+        'cow',
+        'diningtable',
+        'dog',
+        'horse',
+        'motorbike',
+        'person',
+        'pottedplant',
+        'sheep',
+        'sofa',
+        'train',
+        'tvmonitor'])
+
+    if st.button("Segment"):
 
         #transforming the image
         transform = transforms.Compose([
@@ -98,7 +121,7 @@ def main():
         prediction = model(input_batch)["out"]
         normalized_masks = prediction.softmax(dim=1)
         class_to_idx = {cls: idx for (idx, cls) in enumerate(weights.meta["categories"])}
-        mask = normalized_masks[1, class_to_idx["car"]]
+        mask = normalized_masks[0, class_to_idx[class_name]]
         output = to_pil_image(mask)
         st.image(output)
     

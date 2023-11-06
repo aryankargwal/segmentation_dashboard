@@ -62,7 +62,8 @@ def main():
         st.image(upl)
     
     #choosing the model to classify
-    modelname = st.selectbox('Select Segmentation Model',['DeepLabv3 ResNet 101','DeepLabv3 ResNet 50','DeepLabv3 MobileNetv3'])
+    modelname1 = st.selectbox('Select First Segmentation Model',['DeepLabv3 ResNet 101','DeepLabv3 ResNet 50','DeepLabv3 MobileNetv3'])
+    modelname2 = st.selectbox('Select Second Segmentation Model',['DeepLabv3 ResNet 101','DeepLabv3 ResNet 50','DeepLabv3 MobileNetv3'])
     
     #choosing the class that you want to be classified
     class_name = st.selectbox('Select Class that needs to be Classified',['__background__',
@@ -99,15 +100,26 @@ def main():
         std=[0.229, 0.224, 0.225]
         )]) 
         
-        #loading the selected model
-        if modelname == 'DeepLabv3 ResNet 101':
-            weights, model = rn101()
+        #loading the selected models
+        # first model
+        if modelname1 == 'DeepLabv3 ResNet 101':
+            weights1, model1 = rn101()
         
-        elif modelname == 'DeepLabv3 ResNet 50':
-            weights, model = rn50()
+        elif modelname1 == 'DeepLabv3 ResNet 50':
+            weights1, model1 = rn50()
         
-        elif modelname == 'DeepLabv3 ResNet 50':
-            weights, model = mnv3()
+        elif modelname1 == 'DeepLabv3 ResNet 50':
+            weights1, model1 = mnv3()
+
+        # second model
+        if modelname2 == 'DeepLabv3 ResNet 101':
+            weights2, model2 = rn101()
+        
+        elif modelname2 == 'DeepLabv3 ResNet 50':
+            weights2, model2 = rn50()
+        
+        elif modelname2 == 'DeepLabv3 ResNet 50':
+            weights2, model2 = mnv3()
 
         input_image = Image.open(upl)
         input_image = input_image.convert("RGB")
@@ -118,12 +130,28 @@ def main():
 
         input_tensor = preprocess(input_image)
         input_batch = input_tensor.unsqueeze(0)
-        prediction = model(input_batch)["out"]
-        normalized_masks = prediction.softmax(dim=1)
-        class_to_idx = {cls: idx for (idx, cls) in enumerate(weights.meta["categories"])}
-        mask = normalized_masks[0, class_to_idx[class_name]]
-        output = to_pil_image(mask)
-        st.image(output)
+
+        col1, col2 = st.columns(2)
+
+        # inference for first model
+        with col1:
+            st.subheader(modelname1)
+            prediction = model1(input_batch)["out"]
+            normalized_masks = prediction.softmax(dim=1)
+            class_to_idx = {cls: idx for (idx, cls) in enumerate(weights1.meta["categories"])}
+            mask1 = normalized_masks[0, class_to_idx[class_name]]
+            output1 = to_pil_image(mask1)
+            st.image(output1)
+
+        #inference for second model
+        with col2:
+            st.subheader(modelname2)
+            prediction = model2(input_batch)["out"]
+            normalized_masks = prediction.softmax(dim=1)
+            class_to_idx = {cls: idx for (idx, cls) in enumerate(weights2.meta["categories"])}
+            mask2 = normalized_masks[0, class_to_idx[class_name]]
+            output2 = to_pil_image(mask2)
+            st.image(output2)
     
     
 if __name__ == '__main__':
